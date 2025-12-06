@@ -50,6 +50,16 @@ body {
   color: #6b7280;
 }
 
+/* 헤더 아래 음표 3개 장식 */
+.header::after {
+  content: '♩ ♪ ♫';
+  display: block;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  color: #d97706;
+  letter-spacing: 0.6em;
+}
+
 /* ===== 메인 & 카드 ===== */
 .main {
   flex: 1;
@@ -70,7 +80,7 @@ body {
 }
 
 .card h2 {
-  margin: 0 0 12px;
+  margin: 16px 0 12px; /* 시간표 아래라 살짝 위 여백만 늘려줌 */
   font-size: 1.2rem;
   font-weight: 600;
   color: #111827;
@@ -175,6 +185,10 @@ body {
   box-shadow: 0 0 0 1px rgba(217, 119, 6, 0.45);
 }
 
+.form-actions {
+  margin-top: 8px;
+}
+
 /* ===== 메시지 ===== */
 #message {
   margin-top: 12px;
@@ -184,7 +198,7 @@ body {
 
 /* ===== 시간표 영역 ===== */
 .timetable-title {
-  margin: 12px 0 4px;
+  margin: 4px 0 4px;
   font-size: 0.95rem;
   font-weight: 500;
   color: #111827;
