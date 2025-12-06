@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>관리자 · 연세스트링아카데미 연습실 예약</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="page">
+      <header class="header">
+        <h1 class="header-title">연세스트링아카데미</h1>
+        <p class="header-sub">Yonsei String Academy · Admin</p>
+      </header>
+
+      <main class="main">
+        <section class="card">
+          <h2>관리자 페이지</h2>
+
+          <!-- 날짜 선택 -->
+          <div class="date-row">
+            <label>
+              날짜
+              <input type="date" id="admin-date" />
+            </label>
+          </div>
+
+          <!-- 예약 리스트 -->
+          <div class="timetable-title">예약 목록</div>
+          <p class="timetable-help">
+            선택한 날짜의 모든 연습실 예약이 표시됩니다. 강제 취소는 관리자
+            코드가 필요합니다.
+          </p>
+
+          <div class="admin-table-wrapper">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>시간</th>
+                  <th>연습실</th>
+                  <th>학생 이름</th>
+                  <th>관리코드</th>
+                  <th>관리</th>
+                </tr>
+              </thead>
+              <tbody id="admin-reservations-body">
+                <!-- JS로 채워짐 -->
+              </tbody>
+            </table>
+          </div>
+
+          <div id="admin-message"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/admin.js"></script>
+  </body>
+</html>
