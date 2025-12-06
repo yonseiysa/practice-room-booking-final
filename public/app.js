@@ -17,6 +17,7 @@ const ROOMS = [1, 2, 3, 4, 5];
 const TIME_SLOTS = generateTimeSlots('13:00', '22:00', 60);
 
 let currentReservations = [];
+let selectedCell = null; // ✅ 현재 선택된 칸 기억
 
 // 시간 문자열 배열 만들기
 function generateTimeSlots(start, end, stepMinutes) {
@@ -53,10 +54,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const today = new Date().toISOString().slice(0, 10);
   dateInput.value = today;
 
-  // 처음 페이지 열렸을 때 오늘 날짜 기준으로 로딩
+  // 처음 로딩
   loadReservations();
 
-  // 버튼 눌러서 수동으로 새로고침도 가능
+  // 버튼으로 수동 새로고침
   loadBtn.addEventListener('click', (e) => {
     e.preventDefault();
     loadReservations();
@@ -69,7 +70,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
   form.addEventListener('submit', submitReservation);
 });
-
 
 // 예약 데이터 불러오기
 async function loadReservations() {
@@ -105,6 +105,7 @@ async function loadReservations() {
 // 시간표 그리기
 function renderTimetable() {
   timetableEl.innerHTML = '';
+  selectedCell = null; // ✅ 새로 그릴 때 선택 초기화
 
   const table = document.createElement('div');
   table.className = 'timetable-table';
@@ -154,6 +155,12 @@ function renderTimetable() {
 
         // 이 칸 클릭 시: 취소 or 폼 채우기
         cell.addEventListener('click', () => {
+          // ✅ 선택된 칸이 있었으면 파란 표시 제거
+          if (selectedCell) {
+            selectedCell.classList.remove('tt-selected');
+            selectedCell = null;
+          }
+
           const ok = window.confirm(
             `학생: ${reservation.student}\n시간: ${reservation.start} ~ ${reservation.end}\n\n` +
               '이 예약을 취소하시겠습니까?\n\n' +
@@ -162,14 +169,13 @@ function renderTimetable() {
           );
 
           if (ok) {
-            // 취소 시도
             const code = window.prompt(
               '이 예약의 관리코드를 입력하세요.\n(처음 예약할 때 안내된 4자리 숫자)'
             );
             if (!code) return;
             cancelReservation(reservation.id, code);
           } else {
-            // 변경을 위해 폼만 채워주기 (이후 사용자가 새로 예약)
+            // 변경을 위해 폼만 채워주기
             roomSelect.value = String(room);
             startInput.value = reservation.start;
             endInput.value = reservation.end;
@@ -190,6 +196,13 @@ function renderTimetable() {
           endInput.value = next;
 
           studentInput.focus();
+
+          // ✅ 이전 선택 제거 & 현재 칸 파란색으로 표시
+          if (selectedCell) {
+            selectedCell.classList.remove('tt-selected');
+          }
+          cell.classList.add('tt-selected');
+          selectedCell = cell;
         });
       }
 
@@ -225,7 +238,6 @@ async function cancelReservation(id, manageCode) {
     messageEl.textContent = '예약이 취소되었습니다.';
     messageEl.style.color = 'green';
 
-    // 취소 후 시간표 다시 새로고침
     loadReservations();
   } catch (err) {
     console.error(err);
@@ -270,11 +282,10 @@ async function submitReservation(e) {
       return;
     }
 
-    // 🔹 서버가 되돌려준 4자리 관리코드 꺼내기
+    // 서버에서 되돌려준 4자리 관리코드
     const code =
       data.manage_code || data.manageCode || '(코드 정보를 받지 못했습니다)';
 
-    // 🔹 팝업으로도 한 번 보여주기 (학생이 꼭 보게!)
     alert(
       `예약이 저장되었습니다.\n\n` +
         `예약 관리코드: ${code}\n` +
@@ -282,17 +293,14 @@ async function submitReservation(e) {
         `꼭 메모하거나 사진을 찍어 두세요.`
     );
 
-    // 🔹 화면 아래 메시지에도 코드 표시
     messageEl.innerHTML =
       '예약이 저장되었습니다.<br>' +
       `예약 관리코드: <strong>${code}</strong><br>` +
       '<small>※ 이 코드는 나중에 예약 변경/취소할 때 필요합니다. 꼭 메모하거나 사진을 찍어 두세요.</small>';
     messageEl.style.color = 'green';
 
-    // 이름만 비우고, 시간/연습실은 그대로 둬도 되고
     studentInput.value = '';
 
-    // 새로 예약 후 시간표 다시 불러오기
     loadReservations();
   } catch (err) {
     console.error(err);
@@ -300,4 +308,3 @@ async function submitReservation(e) {
     messageEl.style.color = 'red';
   }
 }
-
