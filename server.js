@@ -100,7 +100,7 @@ app.post('/api/reservations', async (req, res) => {
     }
 
     // 6자리 관리코드 생성
-    const manageCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const manageCode = Math.floor(1000 + Math.random() * 9000).toString();
 
     // 예약 저장
     const insertResult = await pool.query(
