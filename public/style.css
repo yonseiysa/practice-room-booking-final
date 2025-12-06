@@ -50,15 +50,7 @@ body {
   color: #6b7280;
 }
 
-/* 헤더 아래 금색 장식 라인 + 음표 느낌 */
-.header::after {
-  content: '♩ ♪ ♫';
-  display: block;
-  margin-top: 10px;
-  font-size: 0.8rem;
-  color: #d97706;
-  letter-spacing: 0.6em;
-}
+/* (여기 있던 .header::after 음표 장식은 삭제됨) */
 
 /* ===== 메인 & 카드 ===== */
 .main {
