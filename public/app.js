@@ -10,10 +10,10 @@ const messageEl = document.getElementById('message');
 const timetableEl = document.getElementById('timetable');
 const form = document.getElementById('reserveForm');
 
-// 연습실 번호 (필요하면 개수 늘리면 됨)
+// 연습실 번호
 const ROOMS = [1, 2, 3, 4, 5];
 
-// ✅ 시간표에 표시할 시간대 (13:00 ~ 22:00, 1시간 간격)
+// 13:00 ~ 22:00, 1시간 간격
 const TIME_SLOTS = generateTimeSlots('13:00', '22:00', 60);
 
 let currentReservations = [];
@@ -50,11 +50,9 @@ function addMinutes(timeStr, deltaMinutes) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  // 오늘 날짜 기본 설정
   const today = new Date().toISOString().slice(0, 10);
   dateInput.value = today;
 
-  // 첫 로딩 시 데이터 가져오기
   loadReservations();
 
   loadBtn.addEventListener('click', (e) => {
@@ -103,13 +101,13 @@ function renderTimetable() {
   const table = document.createElement('div');
   table.className = 'timetable-table';
 
-  // 첫 칸(왼쪽 위) - "시간" 표시
+  // 왼쪽 위 코너
   const corner = document.createElement('div');
   corner.className = 'tt-header tt-corner';
   corner.textContent = '시간';
   table.appendChild(corner);
 
-  // 상단 헤더: 연습실 1~5
+  // 상단 헤더: 연습실들
   ROOMS.forEach((room) => {
     const h = document.createElement('div');
     h.className = 'tt-header';
@@ -119,18 +117,17 @@ function renderTimetable() {
 
   // 각 시간줄
   TIME_SLOTS.forEach((time, idx) => {
-    // 왼쪽 시간 표시 칸
+    // 시간 표시 셀
     const timeCell = document.createElement('div');
     timeCell.className = 'tt-time';
     timeCell.textContent = time;
     table.appendChild(timeCell);
 
-    // 각 연습실 칸
+    // 각 연습실 셀
     ROOMS.forEach((room) => {
       const cell = document.createElement('div');
       cell.className = 'tt-cell';
 
-      // 해당 시간대에 이 방을 사용하는 예약이 있는지 확인
       const reservation = currentReservations.find((r) => {
         return (
           String(r.room) === String(room) &&
@@ -140,23 +137,47 @@ function renderTimetable() {
       });
 
       if (reservation) {
-        // 예약 차 있음
+        // 이미 예약된 칸
         cell.classList.add('tt-busy');
         cell.innerHTML = `
           <div class="tt-student">${reservation.student}</div>
           <div class="tt-range">${reservation.start} ~ ${reservation.end}</div>
         `;
+
+        // 이 칸 클릭 시: 취소 or 폼 채우기
+        cell.addEventListener('click', () => {
+          const ok = window.confirm(
+            `학생: ${reservation.student}\n시간: ${reservation.start} ~ ${reservation.end}\n\n` +
+              '이 예약을 취소하시겠습니까?\n\n' +
+              '※ [확인] → 취소 시도 (관리코드 필요)\n' +
+              '※ [취소] → 아래 예약 폼에 이 정보만 채우기'
+          );
+
+          if (ok) {
+            // 취소 시도
+            const code = window.prompt(
+              '이 예약의 관리코드를 입력하세요.\n(처음 예약할 때 안내된 4자리 숫자)'
+            );
+            if (!code) return;
+            cancelReservation(reservation.id, code);
+          } else {
+            // 변경을 위해 폼만 채워주기 (이후 사용자가 새로 예약)
+            roomSelect.value = String(room);
+            startInput.value = reservation.start;
+            endInput.value = reservation.end;
+            studentInput.value = reservation.student;
+            studentInput.focus();
+          }
+        });
       } else {
-        // 비어 있는 칸
+        // 비어있는 칸
         cell.classList.add('tt-free');
         cell.textContent = '비어있음';
 
-        // ✅ 클릭하면 폼에 자동 입력 (1시간 단위)
         cell.addEventListener('click', () => {
           roomSelect.value = String(room);
           startInput.value = time;
 
-          // 다음 시간 슬롯(1시간 후)을 기본 끝 시간으로 사용
           const next = TIME_SLOTS[idx + 1] || addMinutes(time, 60);
           endInput.value = next;
 
@@ -169,6 +190,40 @@ function renderTimetable() {
   });
 
   timetableEl.appendChild(table);
+}
+
+// 예약 취소 요청
+async function cancelReservation(id, manageCode) {
+  messageEl.textContent = '';
+
+  try {
+    const res = await fetch(`/api/reservations/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ manageCode }),
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      messageEl.textContent =
+        data.error || '예약을 취소하는 중 오류가 발생했습니다.';
+      messageEl.style.color = 'red';
+      return;
+    }
+
+    messageEl.textContent = '예약이 취소되었습니다.';
+    messageEl.style.color = 'green';
+
+    // 취소 후 시간표 다시 새로고침
+    loadReservations();
+  } catch (err) {
+    console.error(err);
+    messageEl.textContent = '서버 오류가 발생했습니다.';
+    messageEl.style.color = 'red';
+  }
 }
 
 // 예약 폼 전송
@@ -207,11 +262,17 @@ async function submitReservation(e) {
       return;
     }
 
-    messageEl.textContent = '예약이 저장되었습니다.';
-    messageEl.style.color = 'green';
+    // 서버에서 되돌려준 관리코드 안내
+    const code =
+      data.manage_code || data.manageCode || '(코드 정보를 받지 못했습니다)';
+
+    messageEl.innerHTML =
+      '예약이 저장되었습니다.<br>' +
+      `예약 관리코드: <strong>${code}</strong><br>` +
+      '<small>※ 이 코드는 나중에 예약 변경/취소할 때 필요합니다. 꼭 메모하거나 사진을 찍어 두세요.</small>';
+
     studentInput.value = '';
 
-    // 새로 예약 후 시간표 다시 불러오기
     loadReservations();
   } catch (err) {
     console.error(err);
