@@ -127,7 +127,7 @@ app.get('/api/admin/reservations', async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT id, room, student_name, start_time, end_time, manage_code
-       FROM bookings
+       FROM reservations
        WHERE date = $1
        ORDER BY start_time, room`,
       [date]
@@ -154,7 +154,7 @@ app.delete('/api/admin/reservations/:id', async (req, res) => {
 
   try {
     const result = await pool.query(
-      'DELETE FROM bookings WHERE id = $1 RETURNING id',
+      'DELETE FROM reservations WHERE id = $1 RETURNING id',
       [id]
     );
 
