@@ -360,6 +360,8 @@ body {
   white-space: nowrap;
 }
 
+/* 관리자/예약 페이지 공통 시간표 슬롯 스타일 */
+
 .slot-cell {
   min-width: 80px;
   cursor: pointer;
@@ -370,11 +372,22 @@ body {
 }
 
 .slot-reserved {
-  background: #bfdbfe;
+  background: #bfdbfe; /* 예약: 연한 파란색 */
 }
 
 .slot-reserved:hover {
   background: #93c5fd;
+}
+
+/* 수업 칸: 검은색 (예약페이지랑 동일한 느낌으로) */
+.slot-class {
+  background: #111827;
+  color: #f9fafb;
+  cursor: default;
+}
+
+.slot-class:hover {
+  background: #111827;
 }
 
 .slot-main {
@@ -385,3 +398,4 @@ body {
   font-size: 0.75rem;
   color: #374151;
 }
+
