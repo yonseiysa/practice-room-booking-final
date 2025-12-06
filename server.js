@@ -1,5 +1,5 @@
 // server.js
-
+const ADMIN_CODE = process.env.ADMIN_CODE || '9999'; 
 const express = require('express');
 const path = require('path');
 const fs = require('fs');           // 🔹 CSV 읽기용
@@ -112,6 +112,62 @@ async function initDb() {
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// 관리자: 특정 날짜 예약 전체 조회
+app.get('/api/admin/reservations', async (req, res) => {
+  const { date } = req.query;
+  if (!date) {
+    return res.status(400).json({ error: 'date 파라미터가 필요합니다.' });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT id, room, student_name, start_time, end_time, manage_code
+       FROM bookings
+       WHERE date = $1
+       ORDER BY start_time, room`,
+      [date]
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error('관리자 예약 조회 오류:', err);
+    res.status(500).json({ error: '예약 조회 중 오류가 발생했습니다.' });
+  }
+});
+
+// 관리자: 관리코드 없이 강제 취소
+app.delete('/api/admin/reservations/:id', async (req, res) => {
+  const { adminCode } = req.body;
+  const { id } = req.params;
+
+  if (!adminCode) {
+    return res.status(400).json({ error: '관리자 코드를 입력해 주세요.' });
+  }
+
+  if (adminCode !== ADMIN_CODE) {
+    return res.status(403).json({ error: '관리자 코드가 올바르지 않습니다.' });
+  }
+
+  try {
+    const result = await pool.query(
+      'DELETE FROM bookings WHERE id = $1 RETURNING id',
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: '해당 예약을 찾을 수 없습니다.' });
+    }
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('관리자 강제 취소 오류:', err);
+    res.status(500).json({ error: '예약 취소 중 오류가 발생했습니다.' });
+  }
+});
 
 // ------------------------------
 //  날짜별 예약 조회
