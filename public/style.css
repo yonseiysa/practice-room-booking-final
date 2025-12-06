@@ -329,3 +329,59 @@ body {
     font-size: 0.7rem;
   }
 }
+/* 관리자 시간표 스타일 */
+.admin-timetable-wrapper {
+  margin-top: 8px;
+  overflow-x: auto;
+}
+
+.admin-timetable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.admin-timetable th,
+.admin-timetable td {
+  border: 1px solid #e5e7eb;
+  text-align: center;
+  padding: 6px 4px;
+}
+
+.admin-timetable th {
+  background: #f9fafb;
+  font-weight: 600;
+}
+
+.admin-timetable .time-cell {
+  background: #f3f4f6;
+  font-weight: 500;
+  width: 70px;
+  white-space: nowrap;
+}
+
+.slot-cell {
+  min-width: 80px;
+  cursor: pointer;
+}
+
+.slot-empty {
+  background: #ffffff;
+}
+
+.slot-reserved {
+  background: #bfdbfe;
+}
+
+.slot-reserved:hover {
+  background: #93c5fd;
+}
+
+.slot-main {
+  font-weight: 600;
+}
+
+.slot-sub {
+  font-size: 0.75rem;
+  color: #374151;
+}
