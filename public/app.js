@@ -262,17 +262,29 @@ async function submitReservation(e) {
       return;
     }
 
-    // 서버에서 되돌려준 관리코드 안내
+    // 🔹 서버가 되돌려준 4자리 관리코드 꺼내기
     const code =
       data.manage_code || data.manageCode || '(코드 정보를 받지 못했습니다)';
 
+    // 🔹 팝업으로도 한 번 보여주기 (학생이 꼭 보게!)
+    alert(
+      `예약이 저장되었습니다.\n\n` +
+        `예약 관리코드: ${code}\n` +
+        `이 코드는 나중에 예약 취소/변경할 때 필요합니다.\n` +
+        `꼭 메모하거나 사진을 찍어 두세요.`
+    );
+
+    // 🔹 화면 아래 메시지에도 코드 표시
     messageEl.innerHTML =
       '예약이 저장되었습니다.<br>' +
       `예약 관리코드: <strong>${code}</strong><br>` +
       '<small>※ 이 코드는 나중에 예약 변경/취소할 때 필요합니다. 꼭 메모하거나 사진을 찍어 두세요.</small>';
+    messageEl.style.color = 'green';
 
+    // 이름만 비우고, 시간/연습실은 그대로 둬도 되고
     studentInput.value = '';
 
+    // 새로 예약 후 시간표 다시 불러오기
     loadReservations();
   } catch (err) {
     console.error(err);
@@ -280,3 +292,4 @@ async function submitReservation(e) {
     messageEl.style.color = 'red';
   }
 }
+
