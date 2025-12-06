@@ -281,6 +281,13 @@ select {
   color: #c62828;
 }
 
+/* 선택된 칸 하이라이트 */
+.tt-selected {
+  background: #e3f2fd;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.3);
+}
+
 .tt-student {
   font-weight: 600;
 }
