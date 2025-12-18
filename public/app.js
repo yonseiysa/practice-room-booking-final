@@ -16,8 +16,9 @@ let currentDate = null;
 let currentReservations = [];
 
 // 10분 세부 바용 선택 상태
-let selectedSlot = null;      // { room, hour }
-let detailStartIndex = null;  // 0~5 (각각 10분 단위 segment 시작 index)
+let selectedSlot = null;   // { room, hour }
+let detailStartIdx = null; // inclusive index 0-5
+let detailEndIdx = null;   // exclusive index 1-6
 
 // 오늘 날짜(YYYY-MM-DD)
 function getToday() {
@@ -206,7 +207,7 @@ function renderTimetable(date, reservations) {
           }`;
           cell.appendChild(line);
 
-          // 필요하면 예약 취소용 id 저장 가능
+          // 관리용 id
           cell.dataset.id = item.id;
         });
       } else {
@@ -266,7 +267,7 @@ async function loadDay() {
       blocks = [];
     }
 
-    // 🔹 전역 상태 업데이트
+    // 전역 상태 업데이트
     currentDate = date;
     currentReservations = reservations || [];
 
@@ -290,13 +291,13 @@ async function loadDay() {
       }
     });
 
-    // 시간표 갱신
+    // 시간표 + 세부바 초기화
     renderTimetable(date, reservations);
 
-    // 선택 상태 초기화 + 세부바 비우기
     selectedCell = null;
     selectedSlot = null;
-    detailStartIndex = null;
+    detailStartIdx = null;
+    detailEndIdx = null;
     renderDetailBar();
 
     if (!reservations || reservations.length === 0) {
@@ -323,9 +324,10 @@ function onFreeCellClick(event) {
   selectedCell = cell;
   cell.classList.add('tt-selected');
 
-  // 전역 선택 슬롯 상태
+  // 선택된 시간대 정보 저장
   selectedSlot = { room: Number(room), hour };
-  detailStartIndex = null; // 세부 선택 초기화
+  detailStartIdx = null;
+  detailEndIdx = null;
 
   // 폼 기본값: 해당 시간 1시간 범위
   const roomSelect = document.getElementById('room-select');
@@ -353,7 +355,7 @@ function onFreeCellClick(event) {
     if (hasEnd) endSelect.value = endTimeStr;
   }
 
-  // 🔹 10분 단위 세부 선택 바 렌더링
+  // 10분 단위 세부 선택 바 렌더링
   renderDetailBar();
 }
 
@@ -365,7 +367,6 @@ function renderDetailBar() {
   bar.innerHTML = '';
 
   if (!selectedSlot || !currentDate) {
-    // 선택된 칸이 없으면 아무것도 표시하지 않음
     return;
   }
 
@@ -384,7 +385,7 @@ function renderDetailBar() {
 
   const baseMin = hour * 60;
 
-  // 한 시간(60분)을 10분씩 6 segment로 나누기
+  // 한 시간(60분)을 10분씩 6개 segment로 나누기
   for (let i = 0; i < 6; i++) {
     const slotStart = baseMin + i * 10;
     const slotEnd = slotStart + 10;
@@ -415,58 +416,71 @@ function renderDetailBar() {
   }
 
   bar.appendChild(slotsWrap);
+
+  // 기존 선택 범위가 있다면 하이라이트/폼에 반영
+  applyDetailSelection();
 }
 
-// 10분 블록 클릭 로직
-function onDetailSlotClick(index) {
-  const totalSegments = 6;
+// 10분 칸 클릭 로직
+function onDetailSlotClick(i) {
   if (!selectedSlot) return;
 
-  // 첫 클릭 → 시작 index 설정 + 기본 30분 정도 선택
-  if (detailStartIndex === null) {
-    detailStartIndex = index;
-    let endIdx = index + 3; // 기본 30분(3칸)
-    if (endIdx > totalSegments) endIdx = totalSegments;
-    applyDetailSelection(detailStartIndex, endIdx);
+  // 아직 선택 없을 때 → 1칸 선택 (예: 13:00만 → 13:00~13:10)
+  if (detailStartIdx === null || detailEndIdx === null) {
+    detailStartIdx = i;
+    detailEndIdx = i + 1;
+  } else if (i === detailStartIdx && detailEndIdx === detailStartIdx + 1) {
+    // 현재 1칸만 선택된 상태에서 그 칸을 다시 클릭 → 선택 해제
+    detailStartIdx = null;
+    detailEndIdx = null;
+  } else if (i < detailStartIdx) {
+    // 더 이른 칸 클릭 → 시작 시간을 앞당김
+    detailStartIdx = i;
+  } else if (i >= detailEndIdx) {
+    // 더 늦은 칸 클릭 → 끝 시간을 뒤로 늘림
+    detailEndIdx = i + 1;
   } else {
-    // 두 번째 클릭:
-    //  - 이전보다 뒤를 클릭하면 → 그 지점까지를 종료로 보고 확정
-    //  - 같거나 앞을 클릭하면 → 새 시작 지점으로 다시 시작
-    if (index <= detailStartIndex) {
-      detailStartIndex = index;
-      let endIdx = index + 3;
-      if (endIdx > totalSegments) endIdx = totalSegments;
-      applyDetailSelection(detailStartIndex, endIdx);
-    } else {
-      const endIdx = index + 1;
-      applyDetailSelection(detailStartIndex, endIdx);
-      // 한 번 범위를 정했으니 다음 클릭은 새 구간으로 시작
-      detailStartIndex = null;
-    }
+    // 선택 범위 안쪽 칸 클릭 → 그 칸만 다시 1칸 선택(길이 조정)
+    detailStartIdx = i;
+    detailEndIdx = i + 1;
   }
+
+  applyDetailSelection();
 }
 
 // 선택된 10분 범위를 하이라이트 + 폼에 반영
-function applyDetailSelection(startIdx, endIdx) {
+function applyDetailSelection() {
   const bar = document.getElementById('detail-bar');
   if (!bar || !selectedSlot) return;
 
   const buttons = bar.querySelectorAll('.detail-slot');
-  buttons.forEach((btn, i) => {
-    if (i >= startIdx && i < endIdx && !btn.disabled) {
+
+  buttons.forEach((btn, idx) => {
+    if (
+      detailStartIdx !== null &&
+      detailEndIdx !== null &&
+      idx >= detailStartIdx &&
+      idx < detailEndIdx &&
+      !btn.disabled
+    ) {
       btn.classList.add('detail-slot-selected');
     } else {
       btn.classList.remove('detail-slot-selected');
     }
   });
 
+  // 선택이 없으면 폼 시간은 건드리지 않음
+  if (detailStartIdx === null || detailEndIdx === null) {
+    return;
+  }
+
   const startSelect = document.getElementById('start-time');
   const endSelect = document.getElementById('end-time');
   if (!startSelect || !endSelect) return;
 
   const baseMin = selectedSlot.hour * 60;
-  const selStartMin = baseMin + startIdx * 10;
-  const selEndMin = baseMin + endIdx * 10;
+  const selStartMin = baseMin + detailStartIdx * 10;
+  const selEndMin = baseMin + detailEndIdx * 10;
 
   const startStr = minutesToTime(selStartMin);
   const endStr = minutesToTime(selEndMin);
@@ -529,7 +543,7 @@ async function handleReserveSubmit(e) {
       data.manage_code || '****'
     })`;
 
-    // 새 예약이 들어갔으니, 시간표/세부바 다시 불러오기
+    // 새 예약 반영해서 시간표/세부바 새로 로딩
     await loadDay();
   } catch (err) {
     console.error(err);
