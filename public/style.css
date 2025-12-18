@@ -146,11 +146,13 @@ body {
 }
 
 /* ===== 폼 ===== */
+/* ===== 폼 (연습실 / 이름 / 시작 / 끝 / 버튼 한 줄 정렬) ===== */
 .form-grid {
-  margin-top: 14px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  margin-top: 16px;
+  display: flex;          /* 가로로 나란히 */
+  flex-wrap: wrap;        /* 폭이 좁아지면 자연스럽게 줄 바꿈 */
   gap: 12px;
+  align-items: flex-end;  /* 아래쪽 기준으로 정렬 (밑선 맞추기) */
 }
 
 .form-row {
@@ -158,36 +160,35 @@ body {
   flex-direction: column;
   font-size: 0.9rem;
   color: #374151;
-}
-
-.form-row label {
-  margin-bottom: 4px;
-}
-
-.form-row input,
-.form-row select {
-  padding: 7px 12px;
-  border-radius: 999px;
-  border: 1px solid #cbd5e1;
-  font-size: 0.9rem;
-  background: #ffffff;
-  color: #111827;
-}
-
-.form-row input::placeholder {
-  color: #9ca3af;
-}
-
-.form-row input:focus,
-.form-row select:focus {
-  outline: none;
-  border-color: #d97706;
-  box-shadow: 0 0 0 1px rgba(217, 119, 6, 0.45);
+  flex: 1 1 140px;        /* 적당히 늘어났다 줄어들었다 */
+  min-width: 140px;
 }
 
 .form-actions {
-  margin-top: 8px;
+  margin-top: 0;          /* 버튼만 아래로 튀어나오는 현상 제거 */
+  flex: 0 0 auto;
+  display: flex;
+  align-items: flex-end;
 }
+
+/* 모바일에서는 세로로 쌓이도록 */
+@media (max-width: 640px) {
+  .form-grid {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-row,
+  .form-actions {
+    min-width: 100%;
+  }
+
+  .form-actions .btn {
+    width: 100%;          /* 작은 화면에서는 버튼이 가로 전체 */
+    text-align: center;
+  }
+}
+
 
 /* ===== 메시지 ===== */
 #message,
