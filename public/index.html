@@ -2,7 +2,7 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <title>연세스트링아카데미 연습실 예약</title>
+    <title>연세스트링아카데미 · 연습실 예약</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="/style.css" />
   </head>
@@ -10,15 +10,14 @@
     <div class="page">
       <header class="header">
         <h1 class="header-title">연세스트링아카데미</h1>
-        <p class="header-sub">
-          Yonsei String Academy · Practice Room Booking
-        </p>
+        <p class="header-sub">YONSEI STRING ACADEMY</p>
       </header>
 
       <main class="main">
         <section class="card">
           <h2>연습실 예약</h2>
-          <!-- 1. 날짜 -->
+
+          <!-- 날짜 선택 -->
           <div class="date-row">
             <label>
               날짜
@@ -26,52 +25,59 @@
             </label>
           </div>
 
-          <!-- 2. 시간표 -->
+          <!-- 시간표 -->
           <div class="timetable-title">연습실 시간표</div>
           <p class="timetable-help">
-            원하는 시간 칸을 누르면 시간이 자동으로 입력됩니다. 검은 칸은
-            수업으로 예약이 불가한 시간입니다.
+            검은 칸은 수업, 빨간 칸은 예약입니다.<br />
+            빈 칸을 클릭하면 해당 시간으로 예약 시간을 미리 채워줍니다.
           </p>
-          <div id="timetable" class="timetable"></div>
 
-          <!-- 3. 연습실 예약 폼 -->
-          
+          <div class="timetable">
+            <div class="timetable-table" id="timetable"></div>
+          </div>
 
-          <form id="reserveForm">
-            <div class="form-grid">
-              <div class="form-row">
-                <label for="room">연습실</label>
-                <select id="room">
+          <!-- 예약 폼 -->
+          <form id="reserve-form" class="form-grid">
+            <div class="form-row">
+              <label>
+                연습실
+                <select id="room-select">
                   <option value="1">연습실 1</option>
                   <option value="2">연습실 2</option>
                   <option value="3">연습실 3</option>
                   <option value="4">연습실 4</option>
                   <option value="5">연습실 5</option>
                 </select>
-              </div>
-              <div class="form-row">
-                <label for="start">시작 시간</label>
-                <input type="time" id="start" />
-              </div>
-              <div class="form-row">
-                <label for="end">끝 시간</label>
-                <input type="time" id="end" />
-              </div>
-              <div class="form-row">
-                <label for="student">이름</label>
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label>
+                학생 이름
                 <input
                   type="text"
-                  id="student"
-                  placeholder="학생 이름"
-                  autocomplete="off"
+                  id="student-name"
+                  placeholder="이름을 입력하세요"
                 />
-              </div>
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label>
+                시작 시간
+                <select id="start-time"></select>
+              </label>
+            </div>
+
+            <div class="form-row">
+              <label>
+                끝나는 시간
+                <select id="end-time"></select>
+              </label>
             </div>
 
             <div class="form-actions">
-              <button type="submit" class="btn btn-primary">
-                예약하기
-              </button>
+              <button type="submit" class="btn btn-primary">예약하기</button>
             </div>
           </form>
 
