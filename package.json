@@ -1,18 +1,13 @@
 {
   "name": "practice-room-booking",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "연세스트링아카데미 연습실 예약 시스템",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@types/node": "^22.13.11",
     "express": "^5.2.1",
     "pg": "^8.11.0"
-  },
-  "description": ""
+  }
 }
