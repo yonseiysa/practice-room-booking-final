@@ -2,21 +2,20 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <title>연세스트링아카데미 · 연습실 예약 관리자</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="/style.css" />
+    <title>연세스트링아카데미 연습실 관리자 페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
   </head>
-  <!-- 관리자 전용 페이지 표시용 클래스 -->
-  <body class="admin-page">
+  <body>
     <div class="page">
       <header class="header">
-        <h1 class="header-title">연세스트링아카데미</h1>
-        <p class="header-sub">Yonsei String Academy · 관리 페이지</p>
+        <h1 class="header-title">YONSEI STRING ACADEMY</h1>
+        <p class="header-sub">연세스트링아카데미 · 관리자 페이지</p>
       </header>
 
       <main class="main">
-        <section class="card">
-          <h2>연습실 예약 · 관리자</h2>
+        <div class="card">
+          <h2>관리자 – 연습실 시간표</h2>
 
           <!-- 날짜 선택 -->
           <div class="date-row">
@@ -26,11 +25,9 @@
             </label>
           </div>
 
-          <!-- 시간표 -->
-          <div class="timetable-title">연습실 시간표 (관리자)</div>
+          <p class="timetable-title">시간표</p>
           <p class="timetable-help">
-            검은 칸은 수업, 빨간 칸은 예약입니다.<br />
-            빨간 칸을 클릭하면 관리자 코드로 해당 예약을 취소할 수 있습니다.
+            빨간 칸(예약됨)을 클릭하면 관리자 코드로 해당 예약을 취소할 수 있습니다.
           </p>
 
           <div class="timetable">
@@ -38,10 +35,10 @@
           </div>
 
           <div id="admin-message"></div>
-        </section>
+        </div>
       </main>
     </div>
 
-    <script src="/admin.js"></script>
+    <script src="admin.js"></script>
   </body>
 </html>
