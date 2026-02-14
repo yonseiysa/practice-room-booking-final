@@ -1,4 +1,4 @@
-/* ===== 폰트 불러오기 (고급스러운 영문 + 한글) ===== */
+/* ===== 폰트 불러오기 ===== */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
 
 /* ===== 기본 설정 ===== */
@@ -65,7 +65,7 @@ body {
   flex: 1;
   padding: 0 16px 28px;
   display: flex;
-  justify-content: center; /* 가운데 정렬 */
+  justify-content: center;
 }
 
 .card {
@@ -145,19 +145,16 @@ body {
   box-shadow: 0 5px 10px rgba(234, 179, 8, 0.2);
 }
 
-/* ===== 폼 ===== */
 /* ===== 폼 (1줄: 연습실/학생이름, 2줄: 시작/끝/버튼) ===== */
 .form-grid {
   margin-top: 16px;
   display: grid;
-  /* 3열: 연습실 / 학생이름 / 버튼 (2줄째 버튼 위치용) */
   grid-template-columns: minmax(0, 140px) minmax(0, 1fr) auto;
-  column-gap: 8px;     /* 연습실–학생이름, 시작–끝 사이 간격 줄이기 */
+  column-gap: 8px;
   row-gap: 8px;
   align-items: end;
 }
 
-/* 공통 폼 행 */
 .form-row {
   display: flex;
   flex-direction: column;
@@ -165,17 +162,15 @@ body {
   color: #374151;
 }
 
-/* 라벨이 두 줄로 안 깨지게 */
 .form-row label {
   margin-bottom: 4px;
   white-space: nowrap;
 }
 
-/* 동글동글한 입력/선택 칸 */
 .form-row input,
 .form-row select {
   padding: 7px 12px;
-  border-radius: 999px;     /* pill 모양 */
+  border-radius: 999px;
   border: 1px solid #cbd5e1;
   font-size: 0.9rem;
   background: #ffffff;
@@ -193,31 +188,28 @@ body {
   box-shadow: 0 0 0 1px rgba(217, 119, 6, 0.45);
 }
 
-/* 1) 연습실 (첫 번째 form-row) → 1행 1열 */
-.form-grid .form-row:nth-child(1) { /* 연습실 */
+/* grid position */
+.form-grid .form-row:nth-child(1) {
+  /* 연습실 */
   grid-column: 1;
   grid-row: 1;
 }
-
-/* 2) 학생 이름 (두 번째 form-row) → 1행 2~3열(조금 더 넓게) */
-.form-grid .form-row:nth-child(2) { /* 학생 이름 */
-  grid-column: 2 / 4;   /* 2열~3열까지 차지 */
+.form-grid .form-row:nth-child(2) {
+  /* 학생 이름 */
+  grid-column: 2 / 4;
   grid-row: 1;
 }
-
-/* 3) 시작 시간 (세 번째 form-row) → 2행 1열 */
-.form-grid .form-row:nth-child(3) { /* 시작 시간 */
+.form-grid .form-row:nth-child(3) {
+  /* 시작 시간 */
   grid-column: 1;
   grid-row: 2;
 }
-
-/* 4) 끝나는 시간 (네 번째 form-row) → 2행 2열 */
-.form-grid .form-row:nth-child(4) { /* 끝나는 시간 */
+.form-grid .form-row:nth-child(4) {
+  /* 끝나는 시간 */
   grid-column: 2;
   grid-row: 2;
 }
 
-/* 5) 버튼 → 2행 3열 (시작/끝과 같은 줄로 올라오게) */
 .form-actions {
   margin-top: 0;
   grid-column: 3;
@@ -226,34 +218,6 @@ body {
   align-items: flex-end;
 }
 
-/* ===== 모바일(폭 좁을 때) 세로 정렬 ===== */
-@media (max-width: 640px) {
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-grid .form-row:nth-child(1),
-  .form-grid .form-row:nth-child(2),
-  .form-grid .form-row:nth-child(3),
-  .form-grid .form-row:nth-child(4),
-  .form-actions {
-    grid-column: 1;
-    grid-row: auto;
-  }
-
-  .form-actions {
-    justify-content: flex-end;
-  }
-
-  .form-actions .btn {
-    width: 100%;
-    text-align: center;
-  }
-}
-
-
-
-/* ===== 메시지 ===== */
 #message,
 #admin-message {
   margin-top: 12px;
@@ -261,7 +225,7 @@ body {
   color: #374151;
 }
 
-/* ===== 시간표 영역 (학생/관리자 공통) ===== */
+/* ===== 시간표 영역 ===== */
 .timetable-title {
   margin: 4px 0 4px;
   font-size: 0.95rem;
@@ -275,7 +239,6 @@ body {
   color: #6b7280;
 }
 
-/* 시간표 바깥 박스 */
 .timetable {
   margin-top: 4px;
   border-radius: 14px;
@@ -285,7 +248,6 @@ body {
   border: 1px solid #e5e7eb;
 }
 
-/* grid: [시간] [연습실1] [연습실2] ... */
 .timetable-table {
   width: 100%;
   min-width: 560px;
@@ -294,7 +256,7 @@ body {
   font-size: 0.78rem;
 }
 
-/* 헤더/코너 */
+/* 헤더 */
 .tt-header {
   font-weight: 600;
   text-align: center;
@@ -351,6 +313,14 @@ body {
   background: #fee2e2;
   border-color: #fecaca;
   color: #b91c1c;
+  cursor: pointer;
+}
+
+/* 수업(예약 불가) 칸 – 검은 칸 */
+.tt-block {
+  background: #111827;
+  color: #f9fafb;
+  font-weight: 500;
 }
 
 /* 예약 내용 */
@@ -362,45 +332,19 @@ body {
   font-size: 0.7rem;
 }
 
-/* 선택된 칸 하이라이트 (파란 테두리) */
+/* 선택된 칸 하이라이트 */
 .tt-selected {
   background: #dbeafe !important;
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }
 
-/* 수업(예약 불가) 칸 – 검은 칸 */
-.tt-block {
-  background: #111827;
-  color: #f9fafb;
-  font-weight: 500;
-}
-
-/* ===== 반응형(핸드폰) ===== */
-@media (max-width: 640px) {
-  .header-title {
-    font-size: 1.4rem;
-  }
-
-  .card {
-    padding: 14px;
-  }
-
-  .timetable-table {
-    font-size: 0.7rem;
-    grid-template-columns: 68px repeat(5, minmax(70px, 1fr));
-  }
-
-  .tt-time {
-    font-size: 0.7rem;
-  }
-}
 /* ===== 10분 단위 세부 선택 바 ===== */
 .detail-bar {
   margin-top: 10px;
   padding: 8px 10px;
   border-radius: 12px;
-  background: #fffbeb;            /* 옅은 노란색 배경 */
+  background: #fffbeb;
   border: 1px solid #fef3c7;
   font-size: 0.78rem;
 }
@@ -448,4 +392,42 @@ body {
   border-color: #3b82f6;
   color: #1e3a8a;
   font-weight: 600;
+}
+
+/* ===== 반응형 ===== */
+@media (max-width: 640px) {
+  .header-title {
+    font-size: 1.4rem;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid .form-row:nth-child(1),
+  .form-grid .form-row:nth-child(2),
+  .form-grid .form-row:nth-child(3),
+  .form-grid .form-row:nth-child(4),
+  .form-actions {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .timetable-table {
+    font-size: 0.7rem;
+    grid-template-columns: 68px repeat(5, minmax(70px, 1fr));
+  }
+
+  .tt-time {
+    font-size: 0.7rem;
+  }
 }
