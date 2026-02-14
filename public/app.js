@@ -11,14 +11,14 @@ let classSlots = []; // { room, hour }
 // 선택된 시간표 칸(파란 테두리)
 let selectedCell = null;
 
-// 현재 날짜 & 예약 목록 (10분 단위 세부 바 계산용)
+// 현재 날짜 & 예약 목록
 let currentDate = null;
 let currentReservations = [];
 
 // 10분 세부 바용 선택 상태
-let selectedSlot = null;   // { room, hour }
-let detailStartIdx = null; // inclusive index 0-5
-let detailEndIdx = null;   // exclusive index 1-6
+let selectedSlot = null; // { room, hour }
+let detailStartIdx = null; // inclusive 0~5
+let detailEndIdx = null; // exclusive 1~6
 
 // 오늘 날짜(YYYY-MM-DD)
 function getToday() {
@@ -29,7 +29,7 @@ function getToday() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-// "HH:MM" → 분(minute)
+// "HH:MM" → 분
 function timeToMinutes(t) {
   if (!t || typeof t !== 'string') return NaN;
   const parts = t.split(':');
@@ -97,7 +97,7 @@ function renderTimetable(date, reservations) {
 
   grid.innerHTML = '';
 
-  // --- 헤더 행 ---
+  // 헤더
   const corner = document.createElement('div');
   corner.className = 'tt-header tt-corner';
   corner.textContent = '시간';
@@ -110,7 +110,7 @@ function renderTimetable(date, reservations) {
     grid.appendChild(h);
   });
 
-  // --- (room-hour) → 예약 배열 매핑 (10분 단위 고려) ---
+  // (room-hour) → 예약 배열 매핑
   const slotMap = {};
 
   (reservations || []).forEach((item) => {
@@ -130,7 +130,6 @@ function renderTimetable(date, reservations) {
       const hourStart = hour * 60;
       const hourEnd = (hour + 1) * 60;
 
-      // [startMin, endMin) 와 [hourStart, hourEnd) 겹치면
       if (startMin < hourEnd && endMin > hourStart) {
         const key = `${room}-${hour}`;
         if (!slotMap[key]) slotMap[key] = [];
@@ -139,7 +138,7 @@ function renderTimetable(date, reservations) {
     });
   });
 
-  // --- 시간별 행 생성 ---
+  // 시간별 행 생성
   HOURS.forEach((hour) => {
     // 왼쪽 시간 칸
     const timeDiv = document.createElement('div');
@@ -157,7 +156,6 @@ function renderTimetable(date, reservations) {
       const isClass = isClassSlotLocal(room, hour);
 
       if (isClass) {
-        // 수업 칸 (검은색)
         cell.classList.add('tt-block');
 
         if (items.length > 0) {
@@ -186,7 +184,6 @@ function renderTimetable(date, reservations) {
           cell.appendChild(labelDiv);
         }
       } else if (items.length > 0) {
-        // 예약 차 있는 칸 (빨간색)
         cell.classList.add('tt-busy');
 
         items.forEach((item) => {
@@ -207,7 +204,6 @@ function renderTimetable(date, reservations) {
           }`;
           cell.appendChild(line);
 
-          // 관리용 id
           cell.dataset.id = item.id;
         });
       } else {
@@ -267,11 +263,9 @@ async function loadDay() {
       blocks = [];
     }
 
-    // 전역 상태 업데이트
     currentDate = date;
     currentReservations = reservations || [];
 
-    // blocks → classSlots(room, hour)
     classSlots = [];
     (blocks || []).forEach((b) => {
       const room = b.room;
@@ -291,7 +285,6 @@ async function loadDay() {
       }
     });
 
-    // 시간표 + 세부바 초기화
     renderTimetable(date, reservations);
 
     selectedCell = null;
@@ -311,32 +304,27 @@ async function loadDay() {
   }
 }
 
-// 빈 칸 클릭 → 시간표 칸 선택 + 기본 1시간 설정 + 세부바 표시
+// 빈 칸 클릭 → 칸 선택 + 기본 1시간 설정 + 세부바 표시
 function onFreeCellClick(event) {
   const cell = event.currentTarget;
   const room = cell.dataset.room;
   const hour = parseInt(cell.dataset.hour, 10);
 
-  // 시간표 칸 하이라이트
   if (selectedCell) {
     selectedCell.classList.remove('tt-selected');
   }
   selectedCell = cell;
   cell.classList.add('tt-selected');
 
-  // 선택된 시간대 정보 저장
   selectedSlot = { room: Number(room), hour };
   detailStartIdx = null;
   detailEndIdx = null;
 
-  // 폼 기본값: 해당 시간 1시간 범위
   const roomSelect = document.getElementById('room-select');
   const startSelect = document.getElementById('start-time');
   const endSelect = document.getElementById('end-time');
 
-  if (roomSelect) {
-    roomSelect.value = String(room);
-  }
+  if (roomSelect) roomSelect.value = String(room);
 
   const startTimeStr = `${String(hour).padStart(2, '0')}:00`;
   const endTimeStr = `${String(hour + 1).padStart(2, '0')}:00`;
@@ -355,7 +343,6 @@ function onFreeCellClick(event) {
     if (hasEnd) endSelect.value = endTimeStr;
   }
 
-  // 10분 단위 세부 선택 바 렌더링
   renderDetailBar();
 }
 
@@ -366,9 +353,7 @@ function renderDetailBar() {
 
   bar.innerHTML = '';
 
-  if (!selectedSlot || !currentDate) {
-    return;
-  }
+  if (!selectedSlot || !currentDate) return;
 
   const { room, hour } = selectedSlot;
 
@@ -385,7 +370,6 @@ function renderDetailBar() {
 
   const baseMin = hour * 60;
 
-  // 한 시간(60분)을 10분씩 6개 segment로 나누기
   for (let i = 0; i < 6; i++) {
     const slotStart = baseMin + i * 10;
     const slotEnd = slotStart + 10;
@@ -396,7 +380,6 @@ function renderDetailBar() {
     btn.className = 'detail-slot';
     btn.textContent = label;
 
-    // 해당 10분 구간에 기존 예약이 있는지 체크
     const reserved = (currentReservations || []).some((r) => {
       if (String(r.room) !== String(room)) return false;
       const rs = timeToMinutes(r.start || '');
@@ -416,8 +399,6 @@ function renderDetailBar() {
   }
 
   bar.appendChild(slotsWrap);
-
-  // 기존 선택 범위가 있다면 하이라이트/폼에 반영
   applyDetailSelection();
 }
 
@@ -425,22 +406,22 @@ function renderDetailBar() {
 function onDetailSlotClick(i) {
   if (!selectedSlot) return;
 
-  // 아직 선택 없을 때 → 1칸 선택 (예: 13:00만 → 13:00~13:10)
   if (detailStartIdx === null || detailEndIdx === null) {
+    // 처음 선택: 1칸만
     detailStartIdx = i;
     detailEndIdx = i + 1;
   } else if (i === detailStartIdx && detailEndIdx === detailStartIdx + 1) {
-    // 현재 1칸만 선택된 상태에서 그 칸을 다시 클릭 → 선택 해제
+    // 1칸 선택 상태에서 같은 칸 다시 클릭 → 해제
     detailStartIdx = null;
     detailEndIdx = null;
   } else if (i < detailStartIdx) {
-    // 더 이른 칸 클릭 → 시작 시간을 앞당김
+    // 더 이른 칸 → 시작 당김
     detailStartIdx = i;
   } else if (i >= detailEndIdx) {
-    // 더 늦은 칸 클릭 → 끝 시간을 뒤로 늘림
+    // 더 늦은 칸 → 끝 늘림
     detailEndIdx = i + 1;
   } else {
-    // 선택 범위 안쪽 칸 클릭 → 그 칸만 다시 1칸 선택(길이 조정)
+    // 범위 안쪽 칸 → 그 칸만 새로 1칸 선택
     detailStartIdx = i;
     detailEndIdx = i + 1;
   }
@@ -448,7 +429,7 @@ function onDetailSlotClick(i) {
   applyDetailSelection();
 }
 
-// 선택된 10분 범위를 하이라이트 + 폼에 반영
+// 선택된 10분 범위 하이라이트 + 폼에 반영
 function applyDetailSelection() {
   const bar = document.getElementById('detail-bar');
   if (!bar || !selectedSlot) return;
@@ -469,10 +450,7 @@ function applyDetailSelection() {
     }
   });
 
-  // 선택이 없으면 폼 시간은 건드리지 않음
-  if (detailStartIdx === null || detailEndIdx === null) {
-    return;
-  }
+  if (detailStartIdx === null || detailEndIdx === null) return;
 
   const startSelect = document.getElementById('start-time');
   const endSelect = document.getElementById('end-time');
@@ -543,7 +521,6 @@ async function handleReserveSubmit(e) {
       data.manage_code || '****'
     })`;
 
-    // 새 예약 반영해서 시간표/세부바 새로 로딩
     await loadDay();
   } catch (err) {
     console.error(err);
