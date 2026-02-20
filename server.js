@@ -7,7 +7,25 @@ const fs = require('fs');
 const { Pool } = require('pg');
 
 const app = express();
+// ------------------------------
+//  수업시간표관리
+// ------------------------------
+let classTimes = [
+  { start: "09:00", end: "12:00" }
+];
+app.get("/api/class-times", (req, res) => {
+  res.json(classTimes);
+});
+app.post("/api/class-times", (req, res) => {
+  const { newTimes, adminCode } = req.body;
 
+  if (adminCode !== ADMIN_CODE) {
+    return res.status(403).json({ message: "관리자 코드가 다릅니다" });
+  }
+
+  classTimes = newTimes;
+  res.json({ message: "수업시간이 수정되었습니다" });
+});
 // ------------------------------
 //  환경 변수
 // ------------------------------
