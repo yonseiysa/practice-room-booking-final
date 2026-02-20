@@ -226,6 +226,36 @@ app.get('/healthz', (req, res) => {
 //  관리자 API
 // ------------------------------
 
+// ------------------------------
+//  관리자: 수업시간표 조회
+// ------------------------------
+app.get('/api/admin/class-schedule', (req, res) => {
+  res.json(weeklyLessons);
+});
+
+// ------------------------------
+//  관리자: 수업시간표 수정
+// ------------------------------
+app.post('/api/admin/class-schedule', (req, res) => {
+  const { adminCode, lessons } = req.body || {};
+
+  if (adminCode !== ADMIN_CODE) {
+    return res.status(403).json({ error: '관리자 코드가 올바르지 않습니다.' });
+  }
+
+  if (!Array.isArray(lessons)) {
+    return res.status(400).json({ error: 'lessons 배열이 필요합니다.' });
+  }
+
+  weeklyLessons = lessons.map(l => ({
+    weekday: Number(l.weekday),
+    room: Number(l.room),
+    start: l.start,
+    end: l.end,
+  }));
+
+  res.json({ success: true });
+});
 // 날짜별 예약 조회 (관리자용)
 app.get('/api/admin/reservations', requireDb, async (req, res) => {
   const { date } = req.query;
