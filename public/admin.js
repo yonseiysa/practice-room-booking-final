@@ -311,3 +311,4 @@ async function updateClassTime() {
   const result = await response.json();
   alert(result.message);
 }
+console.log(weekday, room, start, end);
