@@ -294,3 +294,20 @@ window.addEventListener('DOMContentLoaded', () => {
 
   loadAdminDay();
 });
+async function updateClassTime() {
+  const start = document.getElementById("classStart").value;
+  const end = document.getElementById("classEnd").value;
+  const adminCode = document.getElementById("adminCode").value;
+
+  const response = await fetch("/api/class-times", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      newTimes: [{ start, end }],
+      adminCode
+    })
+  });
+
+  const result = await response.json();
+  alert(result.message);
+}
