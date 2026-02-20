@@ -26,42 +26,36 @@
           </div>
 
           <p class="timetable-title">시간표</p>
-          <p class="timetable-help">
-            빨간 칸(예약됨)을 클릭하면 관리자 코드로 해당 예약을 취소할 수 있습니다.
-          </p>
-
           <div class="timetable">
             <div class="timetable-table" id="admin-timetable"></div>
           </div>
-           <hr style="margin:30px 0;">
 
-  <h3>수업시간 추가</h3>
+          <hr style="margin:30px 0;">
 
-  <label>
-    연습실 선택
-    <select id="classRoom">
-      <option value="1">연습실 1</option>
-      <option value="2">연습실 2</option>
-      <option value="3">연습실 3</option>
-      <option value="4">연습실 4</option>
-      <option value="5">연습실 5</option>
-    </select>
-  </label>
+          <h3>수업시간 추가</h3>
 
-  <label>
-    시작시간
-    <input type="time" id="classStart">
-  </label>
+          <label>
+            연습실
+            <select id="classRoom">
+              <option value="1">연습실 1</option>
+              <option value="2">연습실 2</option>
+              <option value="3">연습실 3</option>
+              <option value="4">연습실 4</option>
+              <option value="5">연습실 5</option>
+            </select>
+          </label>
 
-  <label>
-    종료시간
-    <input type="time" id="classEnd">
-  </label>
+          <label>
+            시작시간
+            <input type="time" id="classStart">
+          </label>
 
-  <button onclick="updateClassTime()">수업시간 추가</button>
+          <label>
+            종료시간
+            <input type="time" id="classEnd">
+          </label>
 
-  <div id="admin-message"></div>
-</div>
+          <button onclick="updateClassTime()">수업시간 추가</button>
 
           <div id="admin-message"></div>
         </div>
@@ -71,12 +65,3 @@
     <script src="admin.js"></script>
   </body>
 </html>
-<input type="text" id="classStart" placeholder="시작시간 (예: 13:00)">
-<input type="text" id="classEnd" placeholder="종료시간 (예: 15:00)">
-<button onclick="updateClassTime()">수업시간 변경</button>
-
-<select id="lessonRoom">
-  <option value="1">연습실 1</option>
-  <option value="2">연습실 2</option>
-  <option value="3">연습실 3</option>
-</select>
