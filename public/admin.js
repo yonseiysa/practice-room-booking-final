@@ -295,19 +295,40 @@ window.addEventListener('DOMContentLoaded', () => {
   loadAdminDay();
 });
 async function updateClassTime() {
+  const room = document.getElementById("classRoom").value;
   const start = document.getElementById("classStart").value;
   const end = document.getElementById("classEnd").value;
-  const adminCode = document.getElementById("adminCode").value;
+  const date = document.getElementById("admin-date").value;
 
-  const response = await fetch("/api/class-times", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      newTimes: [{ start, end }],
-      adminCode
-    })
-  });
+  if (!room || !start || !end || !date) {
+    alert("모든 값을 입력하세요.");
+    return;
+  }
 
-  const result = await response.json();
-  alert(result.message);
+  try {
+    const response = await fetch("/api/blocks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        room,
+        date,
+        start,
+        end,
+        adminCode   // 위에서 prompt로 받은 관리자 코드 사용
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error || "수업시간 추가 실패");
+      return;
+    }
+
+    alert("수업시간이 추가되었습니다.");
+    loadAdminDay(); // 추가 후 바로 다시 그리기
+  } catch (err) {
+    console.error(err);
+    alert("오류가 발생했습니다.");
+  }
 }
