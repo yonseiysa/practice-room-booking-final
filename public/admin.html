@@ -16,7 +16,8 @@
       <main class="main">
         <div class="card">
           <h2>관리자 – 연습실 시간표</h2>
-<p style="color:red;">테스트 문구</p>
+          <p style="color:red;">테스트 문구</p>
+
           <!-- 날짜 선택 -->
           <div class="date-row">
             <label>
@@ -30,8 +31,9 @@
             <div class="timetable-table" id="admin-timetable"></div>
           </div>
 
-          <hr style="margin:30px 0;">
+          <hr style="margin:30px 0;" />
 
+          <!-- 수업시간 추가 섹션 -->
           <h3>수업시간 추가</h3>
 
           <label>
@@ -47,12 +49,12 @@
 
           <label>
             시작시간
-            <input type="time" id="classStart">
+            <input type="time" id="classStart" />
           </label>
 
           <label>
             종료시간
-            <input type="time" id="classEnd">
+            <input type="time" id="classEnd" />
           </label>
 
           <button onclick="updateClassTime()">수업시간 추가</button>
