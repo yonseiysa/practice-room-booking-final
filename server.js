@@ -8,13 +8,6 @@ const { Pool } = require('pg');
 
 const app = express();
 
-  if (adminCode !== ADMIN_CODE) {
-    return res.status(403).json({ message: "관리자 코드가 다릅니다" });
-  }
-
-  classTimes = newTimes;
-  res.json({ message: "수업시간이 수정되었습니다" });
-});
 // ------------------------------
 //  환경 변수
 // ------------------------------
